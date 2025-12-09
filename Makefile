@@ -1,29 +1,11 @@
-# ASM=nasm
-# ASFLAGS=-f elf64
-# LDFLAGS=
-# EXECUTABLE=test
-
-# SRCS	=	ft_strlen.s				\
-
-# OBJS	=   $(SRCS:.s=.o)
-         
-# all: $(SRCS) $(EXECUTABLE)
-                 
-# $(EXECUTABLE): $(OBJS)
-# 		$(LD) $(LDFLAGS) $(OBJS) -o $@
-                                              
-# %.o: %.s
-# 		$(ASM) $(ASFLAGS) $< -o $@
-
-
-
-
-
 NAME 	= 	libasm.a
 
 SRCS	=	ft_strlen.s \
 			ft_strcpy.s \
 			ft_strcmp.s \
+			ft_strdup.s \
+			ft_read.s	\
+			ft_write.s	\
 
 OBJS	=   $(SRCS:.s=.o)
 
