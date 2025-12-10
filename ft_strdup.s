@@ -5,28 +5,23 @@ extern ft_strlen
 extern ft_strcpy
 
 ; char *ft_strdup(const char *s)
-; s in RDI
-; return pointer in RAX
-
+; SysV AMD64: s in RDI, return in RAX
 ft_strdup:
-    push    rdi               ; save src (s) on stack
+    push    rdi                ; save s on stack AND make %rsp 16-byte aligned before calls
 
-    ; len = ft_strlen(s)
-    call    ft_strlen         ; RAX = len(s)
-    inc     rax               ; +1 for '\0'
+    call    ft_strlen          ; RAX = strlen(s)                (bytes, not counting '\0')
+    inc     rax                ; RAX = len + 1                  (space for the '\0')
 
-    ; p = malloc(len + 1)
-    mov     rdi, rax          ; size_t size in RDI
-    call    malloc            ; RAX = pointer or NULL
+    mov     rdi, rax           ; arg1 = size_t size
+    call    malloc wrt ..plt   ; p = malloc(size)  (PIE-safe PLT call)
 
-    test    rax, rax
-    je      .malloc_fail      ; if NULL, return NULL
+    test    rax, rax           ; p == NULL ?
+    je      .malloc_fail       ; if malloc failed, return NULL
 
-    ; success: call ft_strcpy(p, s)
-    mov     rdi, rax          ; dest = p
-    pop     rsi               ; src = original s (from stack)
-    jmp     ft_strcpy         ; tail call: returns dest in RAX
+    mov     rdi, rax           ; arg1 = dest = p
+    pop     rsi                ; arg2 = src  = saved s
+    jmp     ft_strcpy          ; tail-call: strcpy(p, s); returns dest in RAX
 
 .malloc_fail:
-    pop     rcx               ; balance the stack, discard saved s
-    ret                       ; RAX is already NULL
+    pop     rcx                ; balance stack (discard saved s)
+    ret                        ; RAX already NULL
